@@ -12,10 +12,6 @@ const port = process.env.PORT
 
 app.use(fileUpload())
 
-app.get('/', (req, res) => {
-    res.send('WORKED!!!')
-})
-
 app.post('/upload', (req, res) => {
     let sampleFile
     let uploadPath: string
