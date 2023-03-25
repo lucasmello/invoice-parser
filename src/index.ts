@@ -1,6 +1,8 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import fileUpload, { UploadedFile } from 'express-fileupload'
+import path from 'path'
+import { parseInvoice } from './invoice-parser'
 
 
 dotenv.config()
@@ -18,20 +20,20 @@ app.post('/upload', (req, res) => {
     let sampleFile
     let uploadPath: string
 
-    // console.log(req)
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
 
     sampleFile = req.files.invoice as UploadedFile
-    uploadPath = __dirname + '/uploads/' + sampleFile.name
-    console.log('Upload path is ', uploadPath)
-    sampleFile.mv(uploadPath, (err) => {
+    uploadPath = path.join(__dirname, '..', '/uploads/', sampleFile.name)
+    sampleFile.mv(uploadPath, async (err) => {
         if (err) {
             return res.status(500).send(err)
         }
-        res.send(`File uploaded to ${uploadPath}`)
-    })
+        const parsedInvoice = await parseInvoice(uploadPath)
+        res.setHeader('Content-Type', 'application/json')
+        res.send(parsedInvoice)
+    })    
 })
 
 

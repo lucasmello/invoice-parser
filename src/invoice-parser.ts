@@ -40,9 +40,9 @@ function parseExpenses(expenses: Array<string>) {
   return parsedExpenses
 }
 
-async function test() {
+export async function parseInvoice(invoicePath: string) {
 
-    let dataBuffer = fs.readFileSync('/home/lucas/Projects/Invoice Parser/src/fatura.pdf')
+    let dataBuffer = fs.readFileSync(invoicePath)
 
     const expenses: string[] = []
 
@@ -58,7 +58,7 @@ async function test() {
     }).catch(e => console.error(e))
 
 
-    console.log(parseExpenses(expenses))
+    return parseExpenses(expenses)
 
     
     // const costs = []
@@ -91,8 +91,5 @@ async function test() {
 
     // console.log("TOTAL COST: ", (sums.add(180.40)).subtract(negSum).value)
 }
-
-test()
-
 
 // 52 CAFE BISTRO COMERCI 25/02
