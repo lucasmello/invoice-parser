@@ -1,0 +1,28 @@
+{
+  "party": {
+    "places": [
+      "bar ocidente",
+      "ulibier",
+      "cortex",
+      "el aguante",
+      "quintalbutia"
+    ],
+    "name": "Party"
+  },
+  "foodDelivery": {
+    "places": ["ifood"],
+    "name": "Food Delivery"
+  },
+  "transport": {
+    "places": ["uber"],
+    "name": "Transport"
+  },
+  "dating": {
+    "places": ["happn", "tinder"],
+    "name": "Dating"
+  },
+  "groceries": {
+    "places": ["padaria", "zaffari", "bourbon"],
+    "name": "Groceries/SuperMarket/Bakery"
+  }
+}
