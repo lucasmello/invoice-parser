@@ -1,5 +1,7 @@
 import axios from 'axios';
+import currency from 'currency.js';
 import React, { useState } from 'react';
+import './table-style.css'
 
 interface Expense {
     description: string;
@@ -29,6 +31,7 @@ function InvoiceUpload() {
       console.error(error);
     }
   };
+  
 
   const handleFileChange = (event: any) => {
     setFile(event.target.files[0]);
@@ -39,22 +42,22 @@ function InvoiceUpload() {
     return (
         <div>
       <h2>Expense List</h2>
-      <table style={{ borderCollapse: 'collapse', border: '1px solid black' }}>
+      <table className='stripped bordered expense'>
         <thead>
           <tr>
-          <th style={{ border: '1px solid black' }}>Data</th>
-          <th style={{ border: '1px solid black' }}>Valor</th>
-          <th style={{ border: '1px solid black' }}>Descrição</th>
-           <th style={{ border: '1px solid black' }}>Categoria</th>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Valor</th>            
+            <th>Categoria</th>
           </tr>
         </thead>
         <tbody>
           {response.map((expense, index) => (
             <tr key={index}>
-              <td style={{ border: '1px solid black' }}>{expense.date}</td>
-              <td style={{ border: '1px solid black' }}>{expense.description}</td>
-              <td style={{ border: '1px solid black' }}>{expense.cost}</td>              
-              <td style={{ border: '1px solid black' }}>{expense.category}</td>
+              <td>{expense.date}</td>
+              <td>{expense.description}</td>
+              <td>{currency(expense.cost).format({pattern: 'R$#', decimal: ','})}</td>
+              <td>{expense.category}</td>
             </tr>
           ))}
         </tbody>
