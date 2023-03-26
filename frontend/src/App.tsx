@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div>
-      <h1>Invoice Upload</h1>
+      <h1>Fatura</h1>
       <InvoiceUpload />
     </div>
   );  

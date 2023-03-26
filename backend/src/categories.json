@@ -13,6 +13,10 @@
     "places": ["ifood"],
     "name": "Food Delivery"
   },
+  "food": {
+    "places": ["mcdonalds", "restaurante"],
+    "name": "Food"
+  },
   "transport": {
     "places": ["uber"],
     "name": "Transport"
@@ -22,7 +26,15 @@
     "name": "Dating"
   },
   "groceries": {
-    "places": ["padaria", "zaffari", "bourbon"],
+    "places": ["padaria", "zaffari", "bourbon", "mercado", "conveniencia"],
     "name": "Groceries/SuperMarket/Bakery"
+  },
+  "health": {
+    "places": ["farmacia", "odonto"],
+    "name": "Health/Pharmacy"
+  },
+  "entertainment": {
+    "places": ["hbomax", "netflix"],
+    "name": "Entertainment/Streaming"
   }
 }

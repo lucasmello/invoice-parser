@@ -1,8 +1,8 @@
-import express from "express";
+import express, { Request } from "express";
 import dotenv from "dotenv";
 import fileUpload, { UploadedFile } from "express-fileupload";
 import path from "path";
-import { parseInvoice, sumValues } from "./invoice-parser";
+import { parseInvoice, getFinalCost, percentageOfTheCost, Item } from "./invoice-parser";
 import cors from "cors"
 
 dotenv.config();
@@ -12,6 +12,13 @@ const port = process.env.PORT;
 
 app.use(fileUpload());
 app.use(cors())
+
+interface ExpensesResponse {
+  count: number,
+  totalPrice: number,
+  percentage: string,
+  items: Item[]
+}
 
 app.post("/upload", (req, res) => {
   let sampleFile;
@@ -27,16 +34,25 @@ app.post("/upload", (req, res) => {
     if (err) {
       return res.status(500).send(err);
     }
-    const parsedInvoice = await parseInvoice(uploadPath);
+    const responseBody = await createResponse(req, uploadPath)
     res.setHeader("Content-Type", "application/json");
-    res.send(parsedInvoice);
+    res.send(responseBody);
   });
 });
 
 app.get("/expense", async (req, res) => {
+  const responseBody = await createResponse(req, "/home/lucas/Documents/fatura.pdf")
+
+  res.setHeader("Content-Type", "application/json");
+  res.send(responseBody);
+});
+
+async function createResponse(req: Request, invoicePath: string): Promise<ExpensesResponse> {
   let responseData = await parseInvoice(
-    "/home/lucas/Projects/InvoiceParser/uploads/fatura.pdf"
+    invoicePath
   );
+
+  const invoiceTotal = getFinalCost(responseData).value
 
   if (req.query.type) {
     responseData = responseData.filter(
@@ -44,14 +60,24 @@ app.get("/expense", async (req, res) => {
         item.category.toLowerCase() === req.query.type?.toString().toLowerCase()
     );
   }
+  const categoryTotal = getFinalCost(responseData).value
+  
+  for (const item of responseData) {
+    const percentage = percentageOfTheCost(item.cost, categoryTotal)
+    item.percentage = `${percentage}%`
+  }
+
+  const totalPercentage = ((categoryTotal / invoiceTotal) * 100).toFixed(2)
+  
   const responseBody = {
     count: responseData.length,
-    totalPrice: sumValues(responseData).value,
-    items: responseData,
+    totalPrice: categoryTotal,
+    percentage: `${totalPercentage}%`,
+    items: responseData,    
   };
-  res.setHeader("Content-Type", "application/json");
-  res.send(responseBody);
-});
+
+  return responseBody
+}
 
 app.listen(port, () => {
   console.log("Server is running on port ", port);

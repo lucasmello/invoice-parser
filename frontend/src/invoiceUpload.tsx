@@ -3,7 +3,15 @@ import currency from 'currency.js';
 import React, { useState } from 'react';
 import './table-style.css'
 
+interface ExpensesResponse {
+  count: number,
+  totalPrice: number,
+  percentage: string,
+  items: Expense[]
+}
+
 interface Expense {
+    percentage: string;
     description: string;
     cost: number;
     date: string;
@@ -12,7 +20,7 @@ interface Expense {
 
 function InvoiceUpload() {
   const [file, setFile] = useState<File | null>(null);
-  const [response, setResponse] = useState<Expense[]>();
+  const [response, setResponse] = useState<ExpensesResponse>();
 
   const handleSubmit = async (event: { preventDefault: () => void; }) => {
     event.preventDefault();
@@ -40,29 +48,42 @@ function InvoiceUpload() {
   if (response) {
     console.log(response)
     return (
-        <div>
-      <h2>Expense List</h2>
-      <table className='stripped bordered expense'>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Descrição</th>
-            <th>Valor</th>            
-            <th>Categoria</th>
-          </tr>
-        </thead>
-        <tbody>
-          {response.map((expense, index) => (
-            <tr key={index}>
-              <td>{expense.date}</td>
-              <td>{expense.description}</td>
-              <td>{currency(expense.cost).format({pattern: 'R$#', decimal: ','})}</td>
-              <td>{expense.category}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+    <><div>
+      <span style={{fontSize: "24px"}}>Valor Total: </span>
+      <span style={{fontSize: "24px"}}>R${response.totalPrice.toString().replace('.', ',')} *</span>
+      <br></br><br></br>
+      <span style={{fontSize: "24px"}}>Compras Realizadas: </span>
+      <span style={{fontSize: "24px"}}>{response.count}</span>
     </div>
+    
+    <div>
+        <h2>Detalhes da Fatura</h2>
+        <table className='stripped bordered expense'>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Valor</th>
+              <th>Categoria</th>
+              <th>Porcentagem do Gasto</th>
+            </tr>
+          </thead>
+          <tbody>
+            {response.items.map((expense, index) => (
+              <tr key={index}>
+                <td>{expense.date}</td>
+                <td>{expense.description}</td>
+                <td>{currency(expense.cost).format({ pattern: 'R$#', decimal: ',' })}</td>
+                <td>{expense.category}</td>
+                <td>{expense.percentage}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <span>* Valor aproximado. O valor total pode diferir do valor original.</span>
+      </>
     );
   }
 
