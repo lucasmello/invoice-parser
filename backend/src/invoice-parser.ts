@@ -27,22 +27,36 @@ function sanitize(str: string) {
   return str.replace(/\0/g, "");
 }
 
-function parseExpenses(expenses: Array<string>) {
+function parseExpenses(expenses: Array<string>): Item[] {
   const parsedExpenses = [];
   for (const exp of expenses) {
     const match = regexPositiveCosts.exec(exp);
     const matchNegative = regexNegativeCosts.exec(exp);
     if (match) {
       const description = extractDescription(exp);
+      const cost: currency = extractCurrency(match[1]);
       parsedExpenses.push({
         description: description,
-        cost: extractCurrency(match[1]).value,
+        cost: cost.value,
+        date: extractDate(exp),
+        category: categorize(description),
+      });
+    }
+    if (matchNegative) {
+      const description = extractDescription(exp);
+      parsedExpenses.push({
+        description: description,
+        cost: extractCurrency(`-${matchNegative[1]}`).value,
         date: extractDate(exp),
         category: categorize(description),
       });
     }
   }
   return parsedExpenses;
+}
+
+export function percentageOfTheCost(value: number, total: number) {
+  return ((value / total) * 100).toFixed(2);
 }
 
 function categorize(place: string): Category {
@@ -71,10 +85,33 @@ function categorize(place: string): Category {
       return "Groceries";
     }
   }
+  for (const cat of categories.food.places) {
+    if (place.toLowerCase().includes(cat.toLowerCase())) {
+      return "Food";
+    }
+  }
+  for (const cat of categories.health.places) {
+    if (place.toLowerCase().includes(cat.toLowerCase())) {
+      return "Health";
+    }
+  }
+  for (const cat of categories.entertainment.places) {
+    if (place.toLowerCase().includes(cat.toLowerCase())) {
+      return "Entertainment";
+    }
+  }
   return "Other";
 }
 
-export function sumValues(items: any) {
+export interface Item {
+  description: string;
+  cost: number;
+  date?: string;
+  category: Category;
+  percentage?: string;
+}
+
+export function getFinalCost(items: Item[]) {
   let finalValue = currency(0);
   for (const item of items) {
     finalValue = finalValue.add(item.cost);
@@ -82,7 +119,7 @@ export function sumValues(items: any) {
   return finalValue;
 }
 
-export async function parseInvoice(invoicePath: string) {
+export async function parseInvoice(invoicePath: string): Promise<Item[]> {
   let dataBuffer = fs.readFileSync(invoicePath);
 
   const expenses: string[] = [];
