@@ -28,18 +28,18 @@ function sanitize(str: string) {
 }
 
 function parseExpenses(expenses: Array<string>): Item[] {
-  const parsedExpenses = [];  
+  const parsedExpenses = [];
   for (const exp of expenses) {
     const match = regexPositiveCosts.exec(exp);
     const matchNegative = regexNegativeCosts.exec(exp);
     if (match) {
       const description = extractDescription(exp);
-      const cost: currency = extractCurrency(match[1])
+      const cost: currency = extractCurrency(match[1]);
       parsedExpenses.push({
         description: description,
         cost: cost.value,
         date: extractDate(exp),
-        category: categorize(description),        
+        category: categorize(description),
       });
     }
     if (matchNegative) {
@@ -56,7 +56,7 @@ function parseExpenses(expenses: Array<string>): Item[] {
 }
 
 export function percentageOfTheCost(value: number, total: number) {
-  return ((value / total) * 100).toFixed(2)
+  return ((value / total) * 100).toFixed(2);
 }
 
 function categorize(place: string): Category {
@@ -87,28 +87,28 @@ function categorize(place: string): Category {
   }
   for (const cat of categories.food.places) {
     if (place.toLowerCase().includes(cat.toLowerCase())) {
-      return 'Food';
+      return "Food";
     }
   }
   for (const cat of categories.health.places) {
     if (place.toLowerCase().includes(cat.toLowerCase())) {
-      return 'Health';
+      return "Health";
     }
   }
   for (const cat of categories.entertainment.places) {
     if (place.toLowerCase().includes(cat.toLowerCase())) {
-      return 'Entertainment';
+      return "Entertainment";
     }
   }
   return "Other";
 }
 
 export interface Item {
-  description: string,
-  cost: number,
-  date?: string,
-  category: Category,
-  percentage?: string
+  description: string;
+  cost: number;
+  date?: string;
+  category: Category;
+  percentage?: string;
 }
 
 export function getFinalCost(items: Item[]) {
@@ -119,7 +119,7 @@ export function getFinalCost(items: Item[]) {
   return finalValue;
 }
 
-export async function parseInvoice(invoicePath: string): Promise<Item[]>{
+export async function parseInvoice(invoicePath: string): Promise<Item[]> {
   let dataBuffer = fs.readFileSync(invoicePath);
 
   const expenses: string[] = [];
